@@ -38,8 +38,7 @@ self.XAMX = self.XAMX || {
   },
   STYLES: [
     { id: 'text', img: 'img/style-text.jpg' },
-    { id: 'xlogo', img: 'img/style-xlogo.jpg' }, // @store-remove
-    { id: 'galaxy', img: 'img/style-galaxy.jpg' },
+    { id: 'xlogo', img: 'img/style-xlogo.jpg' },
     { id: 'heart', img: 'img/style-heart.jpg' },
     { id: 'grid', img: 'img/style-grid.jpg' },
   ],

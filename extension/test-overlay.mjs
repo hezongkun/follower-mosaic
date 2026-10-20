@@ -2,7 +2,11 @@
 // a tiny SPA that, like X, loads UserByScreenName (fetch) + Followers (XHR) with its own headers
 // incl. x-client-transaction-id when navigated to /<name>/followers, and the next page on scroll.
 // Cases: normal (replay of captured request) · strict (server refuses reused transaction ids →
-// overlay lets the page load pages itself by scrolling) · broken (404 → error with details).
+// overlay lets the page load pages itself by scrolling) · broken (404 → error with details) ·
+// cached (already on the followers page, router ignores pushState: uses what X already loaded) ·
+// clicky (router only reacts to clicks on the Followers tab) · late (capture injected after X's
+// requests: resource timing template) · reload (nothing works until a full reload: resume flag) ·
+// dead (nothing ever works: error + diagnostics, redacted).
 //   node extension/test-overlay.mjs [outDir]
 import { spawn } from 'node:child_process';
 import http from 'node:http';
@@ -19,6 +23,9 @@ const APP = `<!doctype html><html><head><meta charset="utf-8"><title>mock x</tit
 const MODE=(document.cookie.match(/mode=(\\w+)/)||[])[1]; const QID={UserByScreenName:'UBSNqid',Followers:'FOLqid'}; let tx=0, user=null, cursor=null, loading=false, done=false;
 const H=()=>({authorization:'Bearer MOCK','x-csrf-token':'tok','x-client-transaction-id':'tx'+(++tx)+'-'+Math.random().toString(36).slice(2),'x-twitter-active-user':'yes'});
 const api=(op,v)=>'/i/api/graphql/'+QID[op]+'/'+op+'?variables='+encodeURIComponent(JSON.stringify(v))+'&features='+encodeURIComponent(JSON.stringify({f1:true,f2:false}))+'&fieldToggles='+encodeURIComponent(JSON.stringify({withAuxiliaryUserLabels:false}));
+const DEAF=/^(deaf|cached|dead|clicky|reload)$/.test(MODE);
+if(MODE==='clicky'){ const nv=document.createElement('nav'); nv.innerHTML='<a href="/Kuno_he">Profile</a> <a href="/Kuno_he/verified_followers">Verified Followers</a> <a href="/Kuno_he/followers">Followers</a>'; document.body.prepend(nv);
+  nv.addEventListener('click',(e)=>{ const a=e.target.closest('a'); if(!a) return; e.preventDefault(); history.pushState({},'',a.getAttribute('href')); route(); }); }
 async function route(){ const m=location.pathname.match(/^\\/(\\w+)\\/followers$/); if(!m) return;
   const r=await fetch(api('UserByScreenName',{screen_name:m[1],withSafetyModeUserFields:true}),{headers:H()}); const j=await r.json();
   user=j.data&&j.data.user&&j.data.user.result; if(!user) return; cursor=null; done=false; list.innerHTML=''; loadPage(); }
@@ -27,7 +34,8 @@ function loadPage(){ if(loading||done||!user) return; loading=true; const v={use
   x.onload=()=>{ loading=false; if(x.status!==200) return; const j=JSON.parse(x.responseText); let next=null, n=0;
     for(const e of j.data.user.result.timeline.timeline.instructions[0].entries){ if(e.content.cursorType==='Bottom') next=e.content.value; else { n++; const d=document.createElement('div'); d.className='u'; d.textContent=e.content.itemContent.user_results.result.core.name; list.append(d);} }
     if(!n||!next||(MODE==='strict'&&n<20)) done=true; cursor=next; }; x.send(); }
-addEventListener('popstate',route);
+if(!DEAF) addEventListener('popstate',route);
+if(MODE!=='dead') route();
 addEventListener('scroll',()=>{ if(innerHeight+scrollY>=document.documentElement.scrollHeight-80) loadPage(); });
 </script></body></html>`;
 const server = http.createServer((req, res) => {
@@ -62,10 +70,13 @@ let id = 0, buf = ''; const pending = new Map(), events = [];
 rd.on('data', (d) => { buf += d; let i; while ((i = buf.indexOf('\0')) >= 0) { const m = JSON.parse(buf.slice(0, i)); buf = buf.slice(i + 1); if (m.id && pending.has(m.id)) { pending.get(m.id)(m); pending.delete(m.id); } else events.push(m); } });
 const send = (method, params = {}, sessionId) => new Promise((r) => { const i = ++id; pending.set(i, r); wr.write(JSON.stringify({ id: i, method, params, sessionId }) + '\0'); });
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+const CAPTURE = fs.readFileSync(path.join(here, 'lib/capture-main.js'), 'utf8');
 const FILES = ['lib/x-config.js', 'content.js', 'lib/i18n.js', 'lib/fonts-data.js', 'lib/mosaic.js', 'lib/common.js', 'lib/overlay.js'].map((f) => fs.readFileSync(path.join(here, f), 'utf8'));
 let failed = false;
 
-async function run(name, { mode, lang, shot, expect, style = 'text', cap = 500, delay = 1, progShot = null, prefs = null, dsf = 1 }) {
+const ONLY = process.env.XAM_ONLY ? new RegExp(process.env.XAM_ONLY) : null;
+async function run(name, { mode, lang, shot, expect, style = 'text', cap = 500, delay = 1, progShot = null, prefs = null, dsf = 1, startPath = '/home', docStart = false, busyShot = null }) {
+  if (ONLY && !ONLY.test(name)) return;
   log.length = 0;
   const { result: { targetId } } = await send('Target.createTarget', { url: 'about:blank' });
   const { result: { sessionId: s } } = await send('Target.attachToTarget', { targetId, flatten: true });
@@ -75,28 +86,50 @@ async function run(name, { mode, lang, shot, expect, style = 'text', cap = 500, 
   await send('Network.enable', {}, s);
   await send('Network.setCookie', { name: 'mode', value: mode, url: ORIGIN }, s);
   await send('Network.setCookie', { name: 'ct0', value: 'tok', url: ORIGIN }, s);
-  await send('Page.navigate', { url: ORIGIN + '/home' }, s); await sleep(800);
-  const ev = async (expression, contextId) => (await send('Runtime.evaluate', { expression, contextId, awaitPromise: true, returnByValue: true }, s)).result;
-  await ev(fs.readFileSync(path.join(here, 'lib/capture-main.js'), 'utf8'));          // MAIN world
-  const { result: { frameTree } } = await send('Page.getFrameTree', {}, s);
-  const { result: { executionContextId: ctx } } = await send('Page.createIsolatedWorld', { frameId: frameTree.frame.id, worldName: 'xam' }, s);
-  await ev(`window.chrome = { runtime: { id: 'test', onMessage: { addListener() {} } }, storage: { local: (() => { const d = { lang: ${JSON.stringify(lang)}, prefs: ${JSON.stringify(prefs || {})} }; return { get: async (k) => (k == null ? { ...d } : { [k]: d[k] }), set: async (o) => Object.assign(d, o), remove: async () => {} }; })() } };`, ctx);
-  for (const src of FILES) { const r = await ev(src, ctx); if (r.exceptionDetails) console.log('   inject error', JSON.stringify(r.exceptionDetails).slice(0, 200)); }
+  // docStart: like the manifest content script (MAIN world, document_start), before X's first requests
+  if (docStart) await send('Page.addScriptToEvaluateOnNewDocument', { source: CAPTURE }, s);
+  await send('Page.navigate', { url: ORIGIN + startPath }, s); await sleep(1200);
+  const ev = async (expression, contextId) => { const m = await send('Runtime.evaluate', { expression, contextId, awaitPromise: true, returnByValue: true }, s); return m.result || { exceptionDetails: m.error || 'no result' }; };
+  await ev(CAPTURE);          // MAIN world, as injected by the popup (no-op if already installed)
+  // isolated world with the overlay files (what the popup / background service worker inject)
+  const inject = async () => {
+    const { result: { frameTree } } = await send('Page.getFrameTree', {}, s);
+    const { result: { executionContextId: c } } = await send('Page.createIsolatedWorld', { frameId: frameTree.frame.id, worldName: 'xam' }, s);
+    await ev(`window.chrome = { runtime: { id: 'test', getManifest: () => ({ version: '1.0.1' }), sendMessage() {}, onMessage: { addListener() {} } }, storage: { local: (() => { const d = { lang: ${JSON.stringify(lang)}, prefs: ${JSON.stringify(prefs || {})} }; return { get: async (k) => (k == null ? { ...d } : { [k]: d[k] }), set: async (o) => Object.assign(d, o), remove: async () => {} }; })() } };`, c);
+    for (const src of FILES) { const r = await ev(src, c); if (r.exceptionDetails) console.log('   inject error', JSON.stringify(r.exceptionDetails).slice(0, 200)); }
+    return c;
+  };
+  let ctx = await inject();
   await ev(`window.__XAM_OVERLAY__.start({ style: ${JSON.stringify(style)}, target: '', delay: ${delay}, cap: ${cap}, me: { id: '999', screen_name: 'Kuno_he', name: '韭菜盒子🥟', avatar: '/av/u0.png', followers_count: 135 } }); 1`, ctx);
-  let dbg = null;
+  let dbg = null, reloads = 0, elapsedSeen = '';
   let took = false;
-  for (let i = 0; i < 200; i++) { await sleep(500); dbg = (await ev('window.__XAM_OVERLAY__.debug', ctx)).result.value;
+  for (let i = 0; i < 400; i++) { await sleep(500);
+    const rr = await ev('window.__XAM_OVERLAY__ && window.__XAM_OVERLAY__.debug', ctx);
+    if (rr.exceptionDetails || !rr.result || rr.result.type === 'undefined') {
+      // the page reloaded (fallback step 7): emulate lib/resume.js + background.js
+      await sleep(1500);
+      const flag = (await ev(`(() => { const v = sessionStorage.getItem('xam:resume'); sessionStorage.removeItem('xam:resume'); return v; })()`)).result.value;
+      if (!flag) continue;
+      const f = JSON.parse(flag); reloads++;
+      ctx = await inject();
+      await ev(`window.__XAM_OVERLAY__.start(${JSON.stringify({ ...f.o, carry: f.carry })}); 1`, ctx);
+      continue;
+    }
+    dbg = rr.result.value; if (dbg && dbg.elapsed) elapsedSeen = dbg.elapsed;
+    if (busyShot && dbg && dbg.elapsed && i >= 14) { const im = await send('Page.captureScreenshot', { format: 'png' }, s); fs.writeFileSync(path.join(outDir, busyShot), Buffer.from(im.result.data, 'base64')); busyShot = null; }
     if (progShot && !took && dbg && dbg.view === 'progress' && /\d+ \/ \d+/.test(dbg.ptext) && !/^0 /.test(dbg.ptext.replace(/\D*(\d)/, '$1'))) {
       const m = dbg.ptext.match(/(\d+) \/ /); if (m && +m[1] >= 40) { took = true; const im = await send('Page.captureScreenshot', { format: 'png' }, s); fs.writeFileSync(path.join(outDir, progShot), Buffer.from(im.result.data, 'base64')); } } if (dbg && (dbg.view === 'error' || (dbg.view === 'result' && !dbg.drawing && /\d/.test(dbg.info) && !/…/.test(dbg.info)))) break; }
   await sleep(500);
+  const diag = (await ev('JSON.stringify(window.__XAM_OVERLAY__.diag())', ctx)).result.value || '';
   const path0 = (await ev('location.pathname')).result.value;
   const errs = events.slice(mark).filter((e) => e.sessionId === s && e.method === 'Runtime.exceptionThrown');
   if (shot) { const im = await send('Page.captureScreenshot', { format: 'png' }, s); fs.writeFileSync(path.join(outDir, shot), Buffer.from(im.result.data, 'base64')); }
   // closing the overlay should navigate back to where the user was
   await ev('window.__XAM_OVERLAY__.close(); 1', ctx); await sleep(500);
   const back = (await ev('location.pathname')).result.value;
-  const ok = expect(dbg) && !errs.length && back === '/home';
-  console.log(`${ok ? '✔' : '✘'} ${name}: view=${dbg && dbg.view} n=${dbg && dbg.n} info="${dbg && dbg.info}" notice="${dbg && dbg.notice}" ptext="${dbg && dbg.ptext}" err=${JSON.stringify(dbg && dbg.err)} path=${path0}→${back} js-errors=${errs.length}${shot ? ' → ' + shot : ''}`);
+  const leak = /Bearer (MOCK|AAAA)|"tok"|tx\d+-/.test(diag);
+  const ok = expect(dbg, { diag: JSON.parse(diag || '{}'), reloads, elapsedSeen }) && !errs.length && back === startPath && !leak && /"version":"1.0.1"/.test(diag);
+  console.log(`${ok ? '✔' : '✘'} ${name}: view=${dbg && dbg.view} n=${dbg && dbg.n} info="${dbg && dbg.info}" notice="${dbg && dbg.notice}" ptext="${dbg && dbg.ptext}" err=${JSON.stringify(dbg && dbg.err)} path=${path0}→${back} js-errors=${errs.length} steps=${dbg && dbg.steps.join('>')} reloads=${reloads} elapsed="${elapsedSeen}" diag=${diag.length}B leak=${leak}${shot ? ' → ' + shot : ''}`);
   console.log('   requests:', log.join(' | '));
   errs.forEach((e) => console.log('   ', JSON.stringify(e.params).slice(0, 300)));
   if (!ok) failed = true;
@@ -116,7 +149,12 @@ try {
   await run('normal (replay captured request)', { mode: 'normal', lang: 'zh', shot: 'ext-overlay.png', expect: (d) => d && d.view === 'result' && d.n === TOTAL && d.notice.includes(String(TOTAL)) });
   await run('strict (reused tx id refused → page scroll)', { mode: 'strict', lang: 'en', shot: 'ext-overlay-en.png', expect: (d) => d && d.view === 'result' && d.n === TOTAL && /visible/.test(d.notice) });
   await run('cap 100 (stop at user limit)', { mode: 'normal', lang: 'zh', cap: 100, expect: (d) => d && d.view === 'result' && d.n === 100 && /100/.test(d.notice) });
-  await run('broken (404 → error details)', { mode: 'broken', lang: 'en', shot: 'ext-overlay-error-en.png', expect: (d) => d && d.view === 'error' && /HTTP 404/.test(d.err.details || '') });
+  await run('broken (404 → error details)', { mode: 'broken', lang: 'en', expect: (d) => d && d.view === 'error' && /HTTP 404/.test(d.err.details || '') });
+  await run('cached (already on followers page, router ignores pushState)', { mode: 'cached', lang: 'zh', startPath: '/Kuno_he/followers', docStart: true, expect: (d) => d && d.view === 'result' && d.n === TOTAL && d.steps.includes('cached') });
+  await run('clicky (router only reacts to tab clicks)', { mode: 'clicky', lang: 'zh', busyShot: 'ov-busy.png', expect: (d, x) => d && d.view === 'result' && d.n === TOTAL && d.steps.includes('click') && x.diag.timing.firstPageMs > 0 });
+  await run('late capture (X loaded before the hook: resource timing)', { mode: 'cached', lang: 'en', startPath: '/Kuno_he/followers', expect: (d) => d && d.view === 'result' && d.n === TOTAL });
+  await run('reload (only a full reload helps → resume)', { mode: 'reload', lang: 'zh', docStart: true, expect: (d, x) => d && d.view === 'result' && d.n === TOTAL && x.reloads === 1 && d.steps.includes('reload') && d.steps.includes('resume') });
+  await run('dead (nothing works → error + diagnostics)', { mode: 'dead', lang: 'zh', docStart: true, expect: (d, x) => d && d.view === 'error' && x.reloads === 1 && /已用时/.test(x.elapsedSeen) && x.diag.log.length > 20 && x.diag.steps.length >= 8 });
 } catch (e) { console.error('✘', e); failed = true; }
 finally { chrome.kill(); server.close(); await sleep(300); try { fs.rmSync(userDir, { recursive: true, force: true }); } catch (_) {} }
 process.exit(failed ? 1 : 0);

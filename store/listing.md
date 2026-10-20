@@ -34,7 +34,7 @@ Follower Mosaic turns the avatars of your followers on X into one polished, high
 
 **Styles**
 • Your name — or any words you like, including Chinese — spelled out with follower avatars, in 5 fonts
-• Galaxy: your avatar in the centre, followers spiralling around it
+• X logo: followers' avatars arranged in the shape of the X letter mark (used only to refer to the platform; this extension is not affiliated with X Corp.)
 • Heart
 • Grid wall with title and follower count
 • Five colour themes (Midnight, Aurora, Sunset, Mono, Light)
@@ -46,7 +46,7 @@ You can also type another public username to make a mosaic of that account's fol
 • Read-only: it only reads the follower list. It never posts, follows, likes or sends messages.
 • Gentle: one page at a time with a pause between pages (5 s by default, adjustable 1–10 s), automatic back-off when the site asks to slow down, and a follower limit you choose (500 by default, at most 5,000).
 • Everything stays on your computer. Images are composed in your browser. Nothing is sent to us or any third party. There is no server, no analytics and no tracking.
-• Minimal permissions: activeTab, scripting, storage. No permanent access to any website.
+• Minimal permissions: activeTab, scripting, storage, and access to x.com / twitter.com only. No other website.
 • Open source (MIT).
 
 Not affiliated with, endorsed by or sponsored by X Corp. "X" is used only to describe the website this extension works with.
@@ -65,7 +65,7 @@ Not affiliated with, endorsed by or sponsored by X Corp. "X" is used only to des
 
 **样式**
 • 用粉丝头像拼出你的名字，或任何你想写的字（支持中文），5 种字体可选
-• 星系：你的头像在中间，粉丝围绕旋转
+• X 标志：粉丝头像拼成 X 的字母标志（仅用于指代平台；本插件与 X Corp. 无关）
 • 爱心
 • 头像墙（带标题和粉丝数）
 • 5 种配色：午夜、极光、日落、黑白、浅色
@@ -77,7 +77,7 @@ Not affiliated with, endorsed by or sponsored by X Corp. "X" is used only to des
 • 只读：只读取粉丝列表，绝不发帖、关注、点赞或私信。
 • 温和：一次只读一页，每页之间暂停（默认 5 秒，可在 1–10 秒间调整）；网站要求放慢时自动等待；读取人数有上限（默认 500，最多 5000，可调整）。
 • 数据只留在你的电脑：图片在浏览器里生成，不会发送给我们或任何第三方；没有服务器、没有统计、没有追踪。
-• 最少权限：activeTab、scripting、storage，不常驻访问任何网站。
+• 最少权限：activeTab、scripting、storage，只访问 x.com / twitter.com，不访问其他任何网站。
 • 开源（MIT 协议）。
 
 本插件与 X Corp. 无任何关联，也未获其认可或赞助；文中的 "X" 仅用于说明插件适用的网站。
@@ -99,7 +99,7 @@ Not affiliated with, endorsed by or sponsored by X Corp. "X" is used only to des
 All screenshots use **synthetic, generated avatars** (`store/synthetic/`), not real people or brand logos. Sources for re-rendering: `store/assets-src/*.html` (Chinese) and `store/assets-src/en/*.html` (English), rendered with headless Chrome at exact sizes from the captures in `store/raw/` and `store/raw/en/`.
 
 ## Build
-- Upload zip: `node extension/build-store.mjs --zip follower-mosaic-extension.zip`. This removes the X-logo style and the demo mode and puts `manifest.json` at the zip root. Use `--keep-demo` only to capture screenshots.
+- Upload zip: `node extension/build-store.mjs --zip follower-mosaic-extension.zip`. This strips the screenshot (demo) mode and puts `manifest.json` at the zip root. Use `--keep-demo` only to capture screenshots.
 
 ## Other fields
 - **Developer / author**: Kuno_he — https://x.com/Kuno_he

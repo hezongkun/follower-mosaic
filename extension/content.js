@@ -12,11 +12,13 @@
   const features = { ...CONFIG.FEATURES };
   let discovered = null;
 
+  const log = (m, d) => window.__XAM_LOG__ && window.__XAM_LOG__(m, d);
   const cookie = (n) => (document.cookie.match(new RegExp('(?:^|;\\s*)' + n + '=([^;]+)')) || [])[1];
 
   async function discoverQueryIds() {
     if (discovered) return discovered;
     discovered = { ...CONFIG.QUERY_IDS };
+    const t0 = Date.now(), found = [];
     try {
       const urls = new Set();
       document.querySelectorAll('script[src]').forEach((s) => urls.add(s.src));
@@ -24,12 +26,13 @@
       const list = [...urls].filter((u) => /abs\.twimg\.com\/responsive-web\/client-web/.test(u)).sort((a, b) => /\/main\./.test(b) - /\/main\./.test(a));
       const need = new Set(ALLOWED);
       for (const u of list.slice(0, 40)) {
-        if (!need.size) break;
-        const txt = await (await fetch(u)).text();
+        if (!need.size || Date.now() - t0 > 10000) break;     // never let the scan hang the panel
+        let txt = '';
+        try { txt = await (await fetch(u, { signal: AbortSignal.timeout(5000) })).text(); } catch (_) { continue; }
         for (const op of [...need]) {
           const m = txt.match(new RegExp('queryId:"([\\w-]+)",operationName:"' + op + '"'));
           if (m) {
-            discovered[op] = m[1]; need.delete(op);
+            discovered[op] = m[1]; need.delete(op); found.push(op);
             const rest = txt.slice(m.index, m.index + 4000);
             const fs = rest.match(/featureSwitches:\[([^\]]*)\]/);
             if (fs) opFeatures[op] = fs[1].match(/"[\w]+"/g)?.map((x) => x.slice(1, -1)) || [];
@@ -37,10 +40,12 @@
         }
       }
     } catch (_) {}
+    log('bundle-scan', { found, fromConfig: [...ALLOWED].filter((o) => !found.includes(o)), ms: Date.now() - t0 });
     return discovered;
   }
 
-  async function gql(op, variables, extra) {
+  // `pageHeaders`: authorization / x-twitter-* / x-client-language copied from the page's own GraphQL calls
+  async function gql(op, variables, extra, pageHeaders) {
     if (!ALLOWED.has(op)) return { ok: false, status: 0, error: 'op-not-allowed' };
     const ct0 = cookie('ct0');
     if (!ct0) return { ok: false, status: 401, error: 'not-logged-in' };
@@ -55,11 +60,14 @@
         res = await fetch(`${location.origin}/i/api/graphql/${ids[op]}/${op}?${qs}`, {
           method: 'GET', credentials: 'include',
           headers: {
-            authorization: 'Bearer ' + CONFIG.BEARER, 'x-csrf-token': ct0,
+            authorization: 'Bearer ' + CONFIG.BEARER,
             'x-twitter-auth-type': 'OAuth2Session', 'x-twitter-active-user': 'yes', 'content-type': 'application/json',
+            ...(pageHeaders || {}), 'x-csrf-token': ct0,
           },
+          signal: AbortSignal.timeout(20000),
         });
-      } catch (e) { return { ok: false, status: 0, error: 'network' }; }
+      } catch (e) { log('direct', { op, status: 0, error: e && e.name === 'TimeoutError' ? 'timeout' : 'network' }); return { ok: false, status: 0, error: 'network', op, queryId: ids[op], mode: 'bundle' }; }
+      log('direct', { op, status: res.status, queryId: ids[op], pageHeaders: !!(pageHeaders && pageHeaders.authorization) });
       const reset = Number(res.headers.get('x-rate-limit-reset')) || 0;
       if (res.status === 400) {
         const txt = await res.text();

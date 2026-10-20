@@ -2,11 +2,11 @@
 
 [English](README.md) · **简体中文**
 
-把你的 X（Twitter）粉丝头像拼成一张好看的图：用头像拼出你的昵称、星系、爱心，或者整齐的头像墙。免费开源，只读取，全部在你自己的浏览器里完成。
+把你的 X（Twitter）粉丝头像拼成一张好看的图：用头像拼出你的昵称、X 标志、爱心，或者整齐的头像墙。免费开源，只读取，全部在你自己的浏览器里完成。
 
-| 昵称 | 星系 | 爱心 | 头像墙 |
+| 昵称 | X 标志 | 爱心 | 头像墙 |
 |---|---|---|---|
-| ![](store/synthetic/prev-text.jpg) | ![](store/synthetic/prev-galaxy.jpg) | ![](store/synthetic/prev-heart.jpg) | ![](store/synthetic/prev-grid.jpg) |
+| ![](store/synthetic/prev-text.jpg) | ![](store/synthetic/prev-xlogo.jpg) | ![](store/synthetic/prev-heart.jpg) | ![](store/synthetic/prev-grid.jpg) |
 
 <sub>示例图使用的是程序生成的虚拟头像。</sub>
 
@@ -39,14 +39,15 @@ X 显示的粉丝数还包含已封禁、受保护隐藏或已停用的账号，
 - **温和**：一页一页地读，每页之间暂停（默认 5 秒并加随机抖动），有人数上限；遇到 429 限流会按 `x-rate-limit-reset` 自动等待。
 - **照着 X 自己的请求来**：插件在页面内打开粉丝列表，复用 X 自己发出的那个请求（queryId、参数、请求头），只改翻页游标，不靠猜接口。
 - **数据留在本地**：没有服务器、没有统计、不上传任何东西。图片在你的电脑上生成。`chrome.storage.local` 只保存语言、字体、文字、速度、上限这些小设置。
-- **最少权限**：只有 `activeTab`、`scripting`、`storage`，没有网站权限；你不点就什么都不运行。
+- **最少权限**：`activeTab`、`scripting`、`storage`，只访问 x.com / twitter.com。一个小脚本在页面内存里记下 X 自己加载的粉丝请求（这样已经打开的粉丝页也不会漏掉），不发送任何数据，你点「生成」之前不做任何事。
+- **诊断信息**：出问题时面板会显示每一步和已用时间，「复制诊断信息」会复制一份去掉了 cookie/token 的 JSON 日志，可以贴到 issue 里。
 - 隐私政策：<https://hezongkun.github.io/follower-mosaic/privacy.html>
 
 自动化访问可能受 X 服务条款约束，请适度使用。
 
 ## 其他用法
 
-- **网页生成器**：[`web/index.html`](web/index.html) 是一个可离线使用的单文件网页。加载 `followers.json` 即可生成，支持全部样式（包括 X 标志样式）、配色，最大 4800 像素。
+- **网页生成器**：[`web/index.html`](web/index.html) 是一个可离线使用的单文件网页。加载 `followers.json` 即可生成，支持全部样式（另有星系样式）、配色，最大 4800 像素。
 - **控制台脚本 / 书签**：[`fetch/fetch-followers.js`](fetch/fetch-followers.js)（在 x.com 的 F12 控制台里粘贴运行）或 [`fetch/bookmarklet.html`](fetch/bookmarklet.html)，会下载 `followers-用户名.json`。设置在脚本顶部的 `CONFIG`（`MAX_USERS` 默认 500，`DELAY_MS` 5000，`LANG` 等）。
 - **命令行**：`node cli/render.mjs --data followers.json --style galaxy --lang zh --out galaxy.png`。它会调用你本机的 Chrome，不需要任何 npm 依赖（Node ≥ 22）。
 
@@ -62,7 +63,7 @@ node extension/test-overlay.mjs /tmp/shots      # 用模拟 x.com 测试页面�
 python3 tools/i18n-check.py              # 检查代码里没有写死的界面文字
 ```
 
-应用商店版本会去掉 X 标志样式和截图用的演示模式。上架材料在 [`store/`](store/)，GitHub Pages 网站（隐私政策）在 [`docs/`](docs/)。
+应用商店版本只去掉截图用的演示模式。星系样式保留在网页生成器和命令行里。上架材料在 [`store/`](store/)，GitHub Pages 网站（隐私政策）在 [`docs/`](docs/)。
 
 ## 许可
 

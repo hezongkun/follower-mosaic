@@ -42,7 +42,7 @@
 </ul>
 
 <h2>Permissions</h2>
-<p><code>activeTab</code> and <code>scripting</code> run the extension's bundled helper in the x.com tab, only after you click the toolbar button. <code>storage</code> keeps small preferences (language, font, custom text, reading speed, follower limit) locally. No permanent access to any website is requested.</p>
+<p><code>activeTab</code> and <code>scripting</code> run the extension's bundled helper in the x.com tab, only after you click the toolbar button. Host access to x.com / twitter.com lets a tiny script note the follower-list requests x.com itself makes (kept in the tab's memory only, nothing is sent anywhere) and re-open the panel if it had to reload the page once. <code>storage</code> keeps small preferences (language, font, custom text, reading speed, follower limit) locally. No other website is accessed.</p>
 
 <h2>Contact</h2>
 <p>Developer: <a href="https://x.com/Kuno_he">@Kuno_he</a> on X. Questions or problems: open an issue at <a href="https://github.com/hezongkun/follower-mosaic/issues">https://github.com/hezongkun/follower-mosaic/issues</a>. Source code: <a href="https://github.com/hezongkun/follower-mosaic">https://github.com/hezongkun/follower-mosaic</a>.</p>
@@ -58,7 +58,7 @@
   <li><b>登录状态：</b>请求在你已打开的 x.com 页面中进行，沿用你现有的登录，和 X 网页本身一样；插件不会索取、看到或保存你的密码，不使用 OAuth 或 API Key。</li>
   <li><b>本地保存：</b>粉丝列表只在 x.com 页面的插件面板打开期间存在于内存中，关闭即丢弃；本机 <code>chrome.storage.local</code> 只保存界面语言、字体、自定义文字等小设置。</li>
   <li><b>绝不：</b>上传数据、统计追踪、投放广告；绝不发帖、关注、点赞或私信；所有请求均为只读。</li>
-  <li><b>权限：</b><code>activeTab</code>、<code>scripting</code>（仅在你点击插件按钮后，在 x.com 页面运行插件自带脚本），<code>storage</code>（本地保存语言、字体、读取速度等小设置）。</li>
+  <li><b>权限：</b><code>activeTab</code>、<code>scripting</code>（仅在你点击插件按钮后，在 x.com 页面运行插件自带脚本）；只访问 x.com / twitter.com：一个小脚本在本页内存里记下 x.com 自己加载的粉丝列表请求（不发送到任何地方），并在插件需要刷新页面时自动重新打开面板，<code>storage</code>（本地保存语言、字体、读取速度等小设置）。</li>
 </ul>
 <p><b>联系：</b>作者 <a href="https://x.com/Kuno_he">@Kuno_he</a>（X）；问题反馈请到 <a href="https://github.com/hezongkun/follower-mosaic/issues">GitHub Issues</a>。</p>
 <p class="muted">本插件与 X Corp. 无关联。</p>

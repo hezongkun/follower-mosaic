@@ -1,6 +1,6 @@
 ---
 name: x-avatar-mosaic
-description: Turn a user's X followers' avatars into one stylized image (name in avatars, X logo, galaxy, heart, grid wall). Use when the user wants a follower avatar collage / 粉丝拼图. No X authorization is ever requested.
+description: Turn a user's X followers' avatars into one stylized image (name in avatars, X logo, heart, grid wall; galaxy in web/CLI). Use when the user wants a follower avatar collage / 粉丝拼图. No X authorization is ever requested.
 ---
 
 # Follower Mosaic (draft skill)

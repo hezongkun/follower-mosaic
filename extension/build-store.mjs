@@ -1,5 +1,5 @@
 // Builds the Chrome Web Store variant of the extension:
-//  - removes the X-logo style (lines tagged "@store-remove") and its thumbnail
+//  - removes lines tagged "@store-remove" (none at the moment: the X-logo style ships in all builds)
 //  - strips the ?demo= screenshot mode (between "@demo-start" / "@demo-end") and demo/ assets
 //  - writes the upload zip with manifest.json at the root
 // Usage: node extension/build-store.mjs [--keep-demo] [--out dir] [--zip file.zip]
@@ -15,7 +15,7 @@ const out = path.resolve(opt('--out', '/tmp/xam-store-build'));
 const zip = opt('--zip', null);
 execFileSync(process.execPath, [path.join(src, 'build.mjs')], { stdio: 'inherit' });
 fs.rmSync(out, { recursive: true, force: true });
-const SKIP = new Set(['build.mjs', 'build-store.mjs', 'test-extension.mjs', 'test-overlay.mjs', 'style-xlogo.jpg']);
+const SKIP = new Set(['build.mjs', 'build-store.mjs', 'test-extension.mjs', 'test-overlay.mjs']);
 function copy(dir) {
   for (const e of fs.readdirSync(path.join(src, dir), { withFileTypes: true })) {
     const rel = path.join(dir, e.name);
@@ -32,8 +32,8 @@ function copy(dir) {
   }
 }
 copy('');
-for (const f of ['popup.js', 'content.js', 'lib/common.js', 'lib/overlay.js', 'lib/capture-main.js']) execFileSync(process.execPath, ['--check', path.join(out, f)]);
-let found = ''; try { found = execFileSync('grep', ['-rlE', keepDemo ? 'xlogo.jpg' : "demo|xlogo.jpg", out, '--include=*.js', '--include=*.html']).toString(); } catch (_) { /* grep: no match */ }
+for (const f of ['popup.js', 'content.js', 'background.js', 'lib/common.js', 'lib/overlay.js', 'lib/capture-main.js', 'lib/resume.js']) execFileSync(process.execPath, ['--check', path.join(out, f)]);
+let found = ''; try { found = execFileSync('grep', ['-rlE', keepDemo ? 'a^' : 'demo', out, '--include=*.js', '--include=*.html']).toString(); } catch (_) { /* grep: no match */ }
 const leftovers = found.trim().split('\n').filter((f) => !f.endsWith('lib/mosaic.js') && f);
 if (leftovers.length) { console.error('leftovers in', leftovers); process.exit(1); }
 if (zip) {

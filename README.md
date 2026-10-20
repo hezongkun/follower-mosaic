@@ -2,11 +2,11 @@
 
 **English** · [简体中文](README.zh-CN.md)
 
-Turn your X (Twitter) followers' avatars into one beautiful image: your name spelled in avatars, a galaxy, a heart, or a clean grid wall. Free, open source, read-only, and everything runs in your own browser.
+Turn your X (Twitter) followers' avatars into one beautiful image: your name spelled in avatars, the X logo, a heart, or a clean grid wall. Free, open source, read-only, and everything runs in your own browser.
 
-| Name | Galaxy | Heart | Grid |
+| Name | X logo | Heart | Grid |
 |---|---|---|---|
-| ![](store/synthetic/prev-text.jpg) | ![](store/synthetic/prev-galaxy.jpg) | ![](store/synthetic/prev-heart.jpg) | ![](store/synthetic/prev-grid.jpg) |
+| ![](store/synthetic/prev-text.jpg) | ![](store/synthetic/prev-xlogo.jpg) | ![](store/synthetic/prev-heart.jpg) | ![](store/synthetic/prev-grid.jpg) |
 
 <sub>Previews use synthetic, generated avatars.</sub>
 
@@ -39,14 +39,15 @@ X's follower count also includes suspended, hidden or deactivated accounts, so t
 - **Gentle**: one page at a time with a pause (default 5 s plus random jitter), a follower limit, and automatic waiting on HTTP 429 using `x-rate-limit-reset`.
 - **Follows X's own requests**: the extension opens the Followers list in-app and reuses the exact request X itself made (query id, parameters, headers), changing only the cursor. No guessed endpoints.
 - **Local only**: no server, analytics or uploads. The image is drawn on your computer. Only small preferences (language, font, text, speed, limit) are stored in `chrome.storage.local`.
-- **Minimal permissions**: `activeTab`, `scripting`, `storage`. No host permissions; nothing runs until you click.
+- **Minimal permissions**: `activeTab`, `scripting`, `storage`, and x.com / twitter.com only. A tiny script notes X's own follower requests in the tab's memory (so an already-open Followers tab isn't missed); it sends nothing and stays silent until you click.
+- **Diagnostics**: if something goes wrong, the panel shows each step and elapsed time, and **Copy diagnostics** copies a redacted JSON log (no cookies or tokens) you can paste into an issue.
 - Privacy policy: <https://hezongkun.github.io/follower-mosaic/privacy.html>
 
 Automated access may be subject to X's Terms of Service; use it moderately.
 
 ## Other ways to use it
 
-- **Web generator**: [`web/index.html`](web/index.html) is a single offline page. Load a `followers.json` and render with all styles (including the X-logo style), themes and up to 4800 px.
+- **Web generator**: [`web/index.html`](web/index.html) is a single offline page. Load a `followers.json` and render with all styles (plus the galaxy style), themes and up to 4800 px.
 - **Console script / bookmarklet**: [`fetch/fetch-followers.js`](fetch/fetch-followers.js) (paste into the DevTools console on x.com) or [`fetch/bookmarklet.html`](fetch/bookmarklet.html). It downloads `followers-<name>.json`. Settings are in `CONFIG` at the top (`MAX_USERS` default 500, `DELAY_MS` 5000, `LANG`, …).
 - **CLI**: `node cli/render.mjs --data followers.json --style galaxy --lang en --out galaxy.png`. It uses your local Chrome; zero npm dependencies (Node ≥ 22).
 
@@ -62,7 +63,7 @@ node extension/test-overlay.mjs /tmp/shots      # in-page overlay test against a
 python3 tools/i18n-check.py              # no hard-coded UI strings outside the dictionary
 ```
 
-The store build removes the X-logo style and the demo/screenshot mode. Store listing material is in [`store/`](store/); the GitHub Pages site (privacy policy) is in [`docs/`](docs/).
+The store build removes the demo/screenshot mode. The galaxy style is available in the web generator and CLI. Store listing material is in [`store/`](store/); the GitHub Pages site (privacy policy) is in [`docs/`](docs/).
 
 ## Repo layout
 

@@ -28,6 +28,9 @@ try {
   const ld = await send('Extensions.loadUnpacked', { path: here });
   if (ld.error) throw new Error('loadUnpacked failed: ' + JSON.stringify(ld.error));
   const ext = ld.result.id; console.log('✔ extension loaded, id', ext);
+  await send('Target.setDiscoverTargets', { discover: true });
+  let sw = null; for (let i = 0; i < 20 && !sw; i++) { await sleep(250); sw = (await send('Target.getTargets')).result.targetInfos.find((t) => t.type === 'service_worker' && t.url.includes(ext)); }
+  console.log(`${sw ? '✔' : '✘'} service worker ${sw ? 'started: ' + sw.url.replace(/^.*\//, '') : 'missing'}`); if (!sw) failed = true;
   async function shot(page, w, h, file, waitExpr) {
     const { result: { targetId } } = await send('Target.createTarget', { url: 'about:blank' });
     const { result: { sessionId } } = await send('Target.attachToTarget', { targetId, flatten: true });
@@ -61,7 +64,7 @@ try {
   await shot('popup.html', 412, 560, null, toggled('.msg b'));
   for (const lang of ['zh', 'en']) {
     const sfx = lang === 'zh' ? '' : '-en', q = '&lang=' + lang;
-    await shot('popup.html?demo=ready' + q, 412, 760, `ext-popup${sfx}.png`, live);
+    await shot('popup.html?demo=ready' + q, 412, 760, `ext-popup${sfx}.png`, live + " && [...document.querySelectorAll('img[data-style]')].map(i=>i.dataset.style).join()==='text,xlogo,heart,grid'");
     await shot(`popup.html?demo=ready${q}&handle=Kuno_he&n=693&name=` + encodeURIComponent(lang === 'zh' ? '韭菜盒子🥟' : 'Kuno ✨ He'), 412, 760, `ext-popup-live${sfx}.png`, live);
   }
 } catch (e) { if (!e.done) { console.error('✘', e.message); failed = true; } }

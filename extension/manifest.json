@@ -3,7 +3,7 @@
   "name": "__MSG_extName__",
   "short_name": "__MSG_extShortName__",
   "description": "__MSG_extDescription__",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "default_locale": "en",
   "icons": {
     "16": "img/icon16.png",
@@ -25,6 +25,36 @@
     "activeTab",
     "scripting",
     "storage"
+  ],
+  "host_permissions": [
+    "https://x.com/*",
+    "https://twitter.com/*"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "https://x.com/*",
+        "https://twitter.com/*"
+      ],
+      "js": [
+        "lib/capture-main.js"
+      ],
+      "run_at": "document_start",
+      "world": "MAIN"
+    },
+    {
+      "matches": [
+        "https://x.com/*",
+        "https://twitter.com/*"
+      ],
+      "js": [
+        "lib/resume.js"
+      ],
+      "run_at": "document_idle"
+    }
   ],
   "author": "Kuno_he (https://x.com/Kuno_he)",
   "homepage_url": "https://x.com/Kuno_he"
