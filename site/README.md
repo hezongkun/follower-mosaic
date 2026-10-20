@@ -9,4 +9,6 @@ Static bilingual (zh-CN / en) intro page for Follower Mosaic. No build step.
 
 **Chrome Web Store link:** once the listing is approved, set `CHROME_STORE_URL` near the top of the `<script>` in `index.html`. The "审核中 / Coming soon" card switches to "添加到 Chrome / Add to Chrome" automatically.
 
-Deploy: copy this folder (plus `downloads/`) to `/opt/1panel/www/sites/x.sdkmini.com/index/` on the server.
+Deploy: copy this folder (plus `downloads/`) to `/opt/1panel/www/sites/x.sdkmini.com/index/` on the server. Server block: `nginx-x.sdkmini.com.conf` (gzip, 30-day cache on `/assets/`, so give a replaced image a new file name).
+
+Hero and style thumbnails are rendered with `cli/render.mjs` from `store/synthetic` (placeholder avatars, no real people), exported at 2x display size as webp with a png fallback.
