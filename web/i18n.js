@@ -1,0 +1,192 @@
+// Shared i18n dictionary + helpers (zh / en). Source of truth for web/index.html (embedded by web/build.mjs)
+// and the extension (copied to extension/lib/i18n.js by extension/build.mjs).
+(() => {
+if (self.XAM_I18N) return;   // injected twice into the same page: keep the first instance
+const DICT = {
+  zh: {
+    'app.name': '粉丝拼图',
+    'lang.toggle': 'EN', 'lang.toggleTitle': 'Switch to English',
+    'n.followers': '{n} 位粉丝',
+    'time.sec': '{n} 秒', 'time.min': '{n} 分钟',
+    // styles / fonts / themes
+    'style.text': '名字', 'style.galaxy': '星系', 'style.heart': '爱心', 'style.grid': '头像墙',
+    'style.xlogo': 'X 标志', // @store-remove
+    'styleLong.text': '文字：头像拼出名字', 'styleLong.galaxy': '星系：主头像居中', 'styleLong.heart': '爱心', 'styleLong.grid': '头像墙',
+    'styleLong.xlogo': 'X 标志', // @store-remove
+    'font.sans': '粗黑', 'font.rounded': '圆体', 'font.serif': '宋体', 'font.hand': '手写', 'font.cjk': '中文黑体',
+    'theme.midnight': '午夜', 'theme.aurora': '极光', 'theme.sunset': '日落', 'theme.mono': '黑白', 'theme.light': '浅色',
+    'text.placeholder': '例如：谢谢关注', 'text.fallback': '粉丝',
+    // popup
+    'foot.popup': '🔒 只读取、不发帖、不要密码 · 数据只留在你的电脑',
+    'popup.checking': '正在检查…',
+    'popup.notX.title': '请先打开 X（x.com）', 'popup.notX.text': '在 x.com 页面上再点一下这个插件图标就可以啦。',
+    'popup.notReady.title': '页面还没准备好', 'popup.notReady.text': '请刷新一下 x.com 页面，再点插件图标。',
+    'popup.login.title': '你还没有登录 X', 'popup.login.text': '请先在 x.com 登录你的账号（插件不会看到你的密码）。',
+    'popup.oops.title': '出了点小问题', 'popup.oops.text': '请刷新 x.com 页面后再试一次。',
+    'popup.loggedIn': '已登录',
+    'popup.pickStyle': '选一个样式（可以生成后再换）',
+    'popup.other': '想看别人的？输入用户名（不填 = 我自己）',
+    'popup.placeholder': '例如 someone',
+    'btn.close': '关闭',
+    'err.details': '技术细节（反馈问题时可以附上）',
+    'progress.opening': '正在打开 @{u} 的粉丝列表…',
+    'progress.reading': '正在读取 X 自己加载的粉丝数据…',
+    'overlay.restore': '关闭后会回到你刚才的页面',
+    'popup.nameHint': '默认拼你的昵称，生成后可改',
+    'popup.go.me': '✨ 生成我的粉丝头像图', 'popup.go.other': '✨ 生成 @{u} 的粉丝头像图',
+    'popup.badUser': '用户名格式不对，只能是字母/数字/下划线',
+    'btn.openX': '打开 x.com', 'btn.refresh': '刷新页面', 'btn.login': '去登录', 'btn.loginX': '去登录 x.com',
+    // result panel
+    'foot.result': '🔒 只读取公开的粉丝列表，不发帖、不关注、不需要密码；图片在你的电脑上生成，不会上传。',
+    'progress.preparing': '正在准备…', 'progress.connecting': '正在连接 x.com…',
+    'progress.tip': '☕ 为了保护你的账号，插件会<b>慢慢地</b>一页一页读取（间隔可在上面调整）。<br>请<b>不要关闭</b>这个 x.com 页面，可以先去做别的事，读完这里会自动出图。',
+    'cap.label': '最多读取', 'cap.opt': '{n} 位', 'done.cap': '已取最新 {n} 位粉丝',
+    'author': '作者 @Kuno_he',
+    'delay.label': '读取速度：每页间隔', 'delay.warn': '⚠️ 太快可能触发 X 的频率限制（会自动暂停等待），推荐 5 秒。',
+    'done.visible': '已读完全部可见粉丝（{n} 位）',
+    'notice.hidden': 'ℹ️ 已读完全部可见粉丝（{n} 位）。X 显示的粉丝数（{total}）还包含已封禁、受保护隐藏或已停用的账号，这些账号不会出现在列表里。',
+    'progress.found': '已经找到 {got} / {total} 位粉丝', 'progress.eta': '预计还需要 {t}',
+    'progress.paused': '⏸️ X 让我们歇一会儿，{t}后自动继续（账号安全，不用担心）',
+    'progress.done': '全部读取完成，正在拼图…',
+    'result.textLabel': '✏️ 拼成什么字？',
+    'result.textHint': '可以改成任何字，例如「谢谢关注」；回车换行（最多两行），表情符号会自动去掉',
+    'result.styleLabel': '换个样式（不用重新读取）',
+    'btn.download': '⬇️ 下载图片', 'btn.theme': '🎨 换个配色',
+    'result.drawing': '正在拼图…（第一次需要加载头像，稍等几秒）',
+    'result.loadingAvatars': '正在加载头像 {a}/{b}…',
+    'result.info': '共 {n} 位粉丝 · 图片 {w}×{h}', 'result.failed': ' · {n} 个头像加载失败，用首字母代替了',
+    'notice.partial': '⚠️ {title}：先用已经读到的 {n} 位粉丝生成了图片。',
+    'notice.cap': 'ℹ️ 已取最新 {n} 位粉丝（上限可在设置里调整，最多 5000）。',
+    'file.prefix': '粉丝拼图',
+    // errors
+    'err.tabGone.title': 'x.com 页面被关掉或刷新了', 'err.tabGone.text': '读取需要在 x.com 页面里进行。请回到 x.com 页面，再点一次插件图标。',
+    'err.login.title': '登录状态失效了', 'err.login.text': '请重新登录 x.com，然后再点一次插件图标。',
+    'err.updated.title': 'X 更新了网站', 'err.updated.text': '插件需要更新一下才能继续用。请稍后再试，或更新到最新版本。',
+    'err.rate.title': 'X 让我们歇一会儿', 'err.rate.text': '读取得有点多，请 15 分钟后再试。你的账号是安全的。',
+    'err.network.title': '网络好像断了', 'err.network.text': '请检查网络，刷新 x.com 页面后再试。',
+    'err.oops.title': '出了点小问题', 'err.oops.text': '请刷新 x.com 页面，再点一次插件图标试试。',
+    'err.notFound.title': '找不到 @{u}', 'err.notFound.text': '请检查用户名有没有拼错（不用加 @）。',
+    'err.noAccount.title': '没认出你的账号', 'err.noAccount.text': '请确认已经登录 x.com，然后刷新页面再试。',
+    'err.noFollowers.title': '还没有粉丝', 'err.noFollowers.text': '@{u} 目前还没有粉丝，过段时间再来吧！',
+    'err.protected.title': '看不到这个账号的粉丝', 'err.protected.text': '@{u} 是私密账号，只有它的关注者才能看到粉丝列表。',
+    'err.empty.title': '没有读到粉丝', 'err.empty.text': '可能 X 暂时没有返回数据，请过几分钟再试。',
+    'err.noTab.title': '请从 x.com 页面打开插件', 'err.noTab.text': '先打开 x.com，再点浏览器右上角的插件图标。',
+    // web generator
+    'web.title': 'X 粉丝拼图', 'web.sub': '100% 在本地运行，不上传任何数据',
+    'web.drop': '📂 选择 / 拖入 followers.json', 'web.loaded': '✅ {file}', 'web.loadedSub': '{n} 位粉丝{of}', 'web.of': ' · @{u}',
+    'web.style': '样式', 'web.text': '拼成什么字？（文字样式；默认 = 昵称，回车换行，最多两行）', 'web.font': '字体',
+    'web.titleLabel': '标题', 'web.titlePh': '自动', 'web.width': '宽度（像素）', 'web.theme': '配色', 'web.density': '密度',
+    'web.repeat': '头像不够时重复填充', 'web.caption': '显示标题与粉丝数', 'web.stars': '星空背景',
+    'web.render': '生成', 'web.save': '下载 PNG',
+    'web.note': '数据只在你的浏览器里处理：头像直接从 pbs.twimg.com 加载，生成的图片保存在本地。',
+    'web.status.start': '先加载 followers.json（用 /fetch 里的脚本在 x.com 导出）。',
+    'web.loading': '加载头像 {a}/{b} …', 'web.ok': '✔ {w}×{h} 像素 · {n} 位粉丝', 'web.failed': ' · {n} 张头像加载失败，已用首字母代替',
+    'web.err': '出错：{m}', 'web.badJson': '无法读取 JSON：{m}',
+  },
+  en: {
+    'app.name': 'Follower Mosaic',
+    'lang.toggle': '中', 'lang.toggleTitle': '切换到中文',
+    'n.followers': '{n} followers',
+    'time.sec': '{n} s', 'time.min': '{n} min',
+    'style.text': 'Name', 'style.galaxy': 'Galaxy', 'style.heart': 'Heart', 'style.grid': 'Grid',
+    'style.xlogo': 'X logo', // @store-remove
+    'styleLong.text': 'Text: avatars spell a name', 'styleLong.galaxy': 'Galaxy: owner in the center', 'styleLong.heart': 'Heart', 'styleLong.grid': 'Grid wall',
+    'styleLong.xlogo': 'X logo', // @store-remove
+    'font.sans': 'Bold', 'font.rounded': 'Rounded', 'font.serif': 'Serif', 'font.hand': 'Script', 'font.cjk': 'Chinese',
+    'theme.midnight': 'Midnight', 'theme.aurora': 'Aurora', 'theme.sunset': 'Sunset', 'theme.mono': 'Mono', 'theme.light': 'Light',
+    'text.placeholder': 'e.g. Thank you', 'text.fallback': 'Followers',
+    'foot.popup': '🔒 Read-only · never posts · no password · data stays on your computer',
+    'popup.checking': 'Checking…',
+    'popup.notX.title': 'Open X (x.com) first', 'popup.notX.text': 'Go to x.com, then click this extension icon again.',
+    'popup.notReady.title': "The page isn't ready yet", 'popup.notReady.text': 'Please refresh x.com, then click the extension icon again.',
+    'popup.login.title': "You're not logged in to X", 'popup.login.text': 'Log in on x.com first (the extension never sees your password).',
+    'popup.oops.title': 'Something went wrong', 'popup.oops.text': 'Please refresh x.com and try again.',
+    'popup.loggedIn': 'Logged in',
+    'popup.pickStyle': 'Pick a style (you can change it later)',
+    'popup.other': 'Someone else? Enter a username (empty = me)',
+    'popup.placeholder': 'e.g. someone',
+    'btn.close': 'Close',
+    'err.details': 'Technical details (include these when reporting a problem)',
+    'progress.opening': 'Opening the follower list of @{u}…',
+    'progress.reading': 'Reading the follower data X itself loads…',
+    'overlay.restore': 'Closing returns you to the page you were on',
+    'popup.nameHint': 'Spells your display name by default; you can change it later',
+    'popup.go.me': '✨ Make my follower mosaic', 'popup.go.other': "✨ Make @{u}'s follower mosaic",
+    'popup.badUser': 'Invalid username: letters, digits and _ only',
+    'btn.openX': 'Open x.com', 'btn.refresh': 'Refresh page', 'btn.login': 'Log in', 'btn.loginX': 'Log in to x.com',
+    'foot.result': '🔒 Reads the public follower list only. Never posts or follows, no password needed. The image is made on your computer and never uploaded.',
+    'progress.preparing': 'Getting ready…', 'progress.connecting': 'Connecting to x.com…',
+    'progress.tip': '☕ To keep your account safe, the extension reads <b>slowly</b>, page by page (adjust the pause above).<br><b>Keep</b> this x.com tab open. Feel free to do something else; the image will appear here automatically.',
+    'cap.label': 'Max followers', 'cap.opt': '{n}', 'done.cap': 'Got the latest {n} followers',
+    'author': 'Made by @Kuno_he',
+    'delay.label': 'Reading speed: pause per page', 'delay.warn': '⚠️ Faster may trigger X rate limits (it then pauses and waits automatically). 5 s is recommended.',
+    'done.visible': 'Read all visible followers ({n})',
+    'notice.hidden': 'ℹ️ Read all visible followers ({n}). The count X shows ({total}) also includes suspended, hidden or deactivated accounts, which never appear in the list.',
+    'progress.found': 'Found {got} / {total} followers', 'progress.eta': 'About {t} left',
+    'progress.paused': '⏸️ X asked us to slow down. Resuming automatically in {t} (your account is safe).',
+    'progress.done': 'All done! Building your mosaic…',
+    'result.textLabel': '✏️ What should it spell?',
+    'result.textHint': 'Type any words, e.g. "Thank you". Press Enter for a second line (max 2). Emoji are removed automatically.',
+    'result.styleLabel': 'Change style (no re-fetch)',
+    'btn.download': '⬇️ Download image', 'btn.theme': '🎨 Change colors',
+    'result.drawing': 'Building the image… (loading avatars the first time takes a few seconds)',
+    'result.loadingAvatars': 'Loading avatars {a}/{b}…',
+    'result.info': '{n} followers · {w}×{h} px', 'result.failed': ' · {n} avatars failed to load and were replaced with initials',
+    'notice.partial': '⚠️ {title}: made the image from the {n} followers read so far.',
+    'notice.cap': 'ℹ️ Got the latest {n} followers (you can raise the limit in the settings, up to 5,000).',
+    'file.prefix': 'follower-mosaic',
+    'err.tabGone.title': 'The x.com tab was closed or reloaded', 'err.tabGone.text': 'Reading happens inside the x.com tab. Go back to x.com and click the extension icon again.',
+    'err.login.title': "You've been logged out", 'err.login.text': 'Log in to x.com again, then click the extension icon.',
+    'err.updated.title': 'X has updated its site', 'err.updated.text': 'The extension needs an update to keep working. Try again later or update to the latest version.',
+    'err.rate.title': 'X asked us to take a break', 'err.rate.text': 'Too many reads for now. Please try again in 15 minutes. Your account is safe.',
+    'err.network.title': "Looks like you're offline", 'err.network.text': 'Check your connection, refresh x.com and try again.',
+    'err.oops.title': 'Something went wrong', 'err.oops.text': 'Please refresh x.com and click the extension icon again.',
+    'err.notFound.title': "Can't find @{u}", 'err.notFound.text': 'Check the spelling (no @ needed).',
+    'err.noAccount.title': "Couldn't recognize your account", 'err.noAccount.text': "Make sure you're logged in to x.com, then refresh and try again.",
+    'err.noFollowers.title': 'No followers yet', 'err.noFollowers.text': '@{u} has no followers yet. Come back later!',
+    'err.protected.title': "Can't see this account's followers", 'err.protected.text': '@{u} is a protected account: only its approved followers can see the list.',
+    'err.empty.title': 'No followers were returned', 'err.empty.text': "X may not be returning data right now. Please try again in a few minutes.",
+    'err.noTab.title': 'Open the extension from x.com', 'err.noTab.text': 'Go to x.com first, then click the extension icon in the toolbar.',
+    'web.title': 'Follower Mosaic', 'web.sub': '100% local. Nothing is uploaded.',
+    'web.drop': '📂 Choose or drop followers.json', 'web.loaded': '✅ {file}', 'web.loadedSub': '{n} followers{of}', 'web.of': ' of @{u}',
+    'web.style': 'Style', 'web.text': 'What should it spell? (Name style; default = display name, Enter = new line, max 2)', 'web.font': 'Font',
+    'web.titleLabel': 'Title', 'web.titlePh': 'auto', 'web.width': 'Width (px)', 'web.theme': 'Theme', 'web.density': 'Density',
+    'web.repeat': 'Repeat avatars to fill', 'web.caption': 'Show title & follower count', 'web.stars': 'Starfield',
+    'web.render': 'Render', 'web.save': 'Download PNG',
+    'web.note': 'Everything runs in your browser: avatars load straight from pbs.twimg.com and the image is saved locally.',
+    'web.status.start': 'Load followers.json first (export it on x.com with the script in /fetch).',
+    'web.loading': 'Loading avatars {a}/{b}…', 'web.ok': '✔ {w}×{h} px · {n} followers', 'web.failed': ' · {n} avatars failed to load and were replaced with initials',
+    'web.err': 'Error: {m}', 'web.badJson': 'Invalid JSON: {m}',
+  },
+};
+const detect = () => (String((self.navigator && navigator.language) || 'en').toLowerCase().startsWith('zh') ? 'zh' : 'en');
+let lang = detect();
+const listeners = [];
+let store = null;
+let ROOT = null; // element/shadow root to translate (default: document)
+function t(key, vars) {
+  let s = DICT[lang][key] ?? DICT.en[key] ?? key;
+  if (vars) s = s.replace(/\{(\w+)\}/g, (_, k) => (vars[k] ?? ''));
+  return s;
+}
+function apply(root = ROOT || document) {
+  root.querySelectorAll('[data-i18n]').forEach((el) => (el.textContent = t(el.dataset.i18n)));
+  root.querySelectorAll('[data-i18n-html]').forEach((el) => (el.innerHTML = t(el.dataset.i18nHtml))); // dictionary strings only
+  root.querySelectorAll('[data-i18n-ph]').forEach((el) => (el.placeholder = t(el.dataset.i18nPh)));
+  root.querySelectorAll('[data-i18n-title]').forEach((el) => (el.title = t(el.dataset.i18nTitle)));
+  if (root === document) { document.documentElement.lang = lang === 'zh' ? 'zh-CN' : 'en'; }
+}
+self.XAM_I18N = {
+  t, apply, detect,
+  setRoot(r) { ROOT = r; },
+  get lang() { return lang; },
+  set(l) { if (!DICT[l] || l === lang) return; lang = l; apply(); listeners.forEach((f) => f(l)); },
+  onChange(f) { listeners.push(f); },
+  num: (n) => Number(n || 0).toLocaleString(lang === 'zh' ? 'zh-CN' : 'en-US'),
+  // store = { get: async () => 'zh'|'en'|undefined, set: async (l) => void }
+  async init(s) { store = s; try { const saved = s && (await s.get()); if (saved && DICT[saved]) lang = saved; } catch (_) {} apply(); return lang; },
+  toggle() { const l = lang === 'zh' ? 'en' : 'zh'; this.set(l); try { store && store.set(l); } catch (_) {} return l; },
+  // wire a <button> as the 中/EN switch
+  bindToggle(btn) { const upd = () => { btn.textContent = t('lang.toggle'); btn.title = t('lang.toggleTitle'); }; upd(); listeners.push(upd); btn.onclick = () => this.toggle(); },
+};
+})();

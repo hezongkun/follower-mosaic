@@ -1,0 +1,11 @@
+{
+  "extName": {
+    "message": "Follower Mosaic – Follower Avatar Art"
+  },
+  "extShortName": {
+    "message": "Follower Mosaic"
+  },
+  "extDescription": {
+    "message": "Turn your followers' avatars into one beautiful image. Read-only, no password or login needed, runs locally."
+  }
+}

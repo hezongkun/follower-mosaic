@@ -1,0 +1,11 @@
+{
+  "extName": {
+    "message": "粉丝拼图 Follower Mosaic"
+  },
+  "extShortName": {
+    "message": "粉丝拼图"
+  },
+  "extDescription": {
+    "message": "一键把你的粉丝头像拼成一张好看的图片。只读取、不要密码、无需授权，全部在本地完成。"
+  }
+}

@@ -1,0 +1,25 @@
+@font-face { font-family:"XAM Fredoka"; src:url(fonts/Fredoka-Bold.woff) format("woff"); font-weight:700 }
+@font-face { font-family:"XAM Pacifico"; src:url(fonts/Pacifico.woff) format("woff"); font-weight:400 }
+:root { --bg:#0b0f1a; --panel:#141b2d; --line:#26314b; --fg:#eef2fa; --mut:#8e9ab4; --acc:#1d9bf0; --ok:#22c55e; --warn:#f59e0b }
+* { box-sizing:border-box }
+body { margin:0; background:var(--bg); color:var(--fg); font:15px/1.55 system-ui,-apple-system,"PingFang SC","Microsoft YaHei","Noto Sans CJK SC",sans-serif }
+h1 { font-size:18px; margin:0 } .mut { color:var(--mut) }
+.big { display:block; width:100%; padding:16px; margin-top:14px; border:0; border-radius:16px; background:linear-gradient(135deg,#1d9bf0,#7c5cff); color:#fff; font-size:18px; font-weight:800; cursor:pointer; box-shadow:0 6px 20px #1d9bf055 }
+.big:hover { filter:brightness(1.08) } .big:disabled { opacity:.5; cursor:default }
+.big.gray { background:#26314b; box-shadow:none }
+.who { display:flex; align-items:center; gap:12px; background:var(--panel); border:1px solid var(--line); border-radius:16px; padding:12px }
+.who img { width:56px; height:56px; border-radius:50%; border:2px solid var(--acc); object-fit:cover; background:#223 }
+.who b { font-size:17px; display:block } .who small { color:var(--mut) }
+.cards { display:grid; grid-auto-flow:column; grid-auto-columns:1fr; gap:6px; margin-top:6px }
+.card { padding:0; border:2px solid transparent; border-radius:12px; background:var(--panel); color:var(--fg); cursor:pointer; overflow:hidden; font:inherit; font-size:12px }
+.card img { display:block; width:100%; aspect-ratio:1; object-fit:cover }
+.card span { display:block; padding:3px 0 4px }
+.card.on { border-color:var(--acc); box-shadow:0 0 0 2px #1d9bf044 }
+.field { width:100%; padding:10px 12px; margin-top:6px; border-radius:12px; border:1px solid var(--line); background:#0e1424; color:var(--fg); font:inherit }
+.lbl { margin-top:14px; font-size:13px; color:var(--mut) }
+.msg { text-align:center; padding:14px 6px } .msg .emoji { font-size:44px } .msg p { margin:8px 0 }
+.foot { margin-top:12px; font-size:11px; color:var(--mut); text-align:center }
+.bar { height:16px; border-radius:999px; background:#1b2338; overflow:hidden; border:1px solid var(--line) }
+.bar i { display:block; height:100%; width:0; background:linear-gradient(90deg,#1d9bf0,#7c5cff); transition:width .6s }
+.langbtn { padding:4px 10px; border-radius:999px; border:1px solid var(--line); background:transparent; color:var(--fg); font:600 13px/1.4 system-ui,sans-serif; cursor:pointer }
+.langbtn:hover { border-color:var(--acc) }

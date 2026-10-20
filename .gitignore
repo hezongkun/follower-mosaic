@@ -1,0 +1,12 @@
+node_modules/
+demo-data/
+*.log
+.DS_Store
+followers-*.json
+!examples/followers.sample.json
+*.zip
+*.tar.gz
+# large full-size renders (previews/screenshots are kept)
+examples/demo-*.png
+store/synthetic/demo-*.png
+store/raw/
