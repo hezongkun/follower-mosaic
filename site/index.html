@@ -1,0 +1,325 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>粉丝拼图 Follower Mosaic · 把 X 粉丝头像拼成一张图</title>
+<meta name="description" content="Follower Mosaic (粉丝拼图) is a free Chrome extension that turns your X followers' avatars into one image shaped like your name, a heart, a galaxy or an avatar wall. No login, no authorization, runs locally.">
+<meta property="og:title" content="Follower Mosaic · 粉丝拼图">
+<meta property="og:description" content="Turn your X followers' avatars into one beautiful image. No login, runs locally in your browser.">
+<meta property="og:image" content="https://x.sdkmini.com/assets/og.jpg">
+<meta property="og:url" content="https://x.sdkmini.com/">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:creator" content="@Kuno_he">
+<meta name="theme-color" content="#0b1220">
+<link rel="icon" type="image/png" href="assets/favicon.png">
+<link rel="canonical" href="https://x.sdkmini.com/">
+<style>
+:root{--bg:#0b1220;--bg2:#111a2e;--card:#141f36;--line:#24324f;--text:#e8eefc;--muted:#9aa8c7;--accent:#4f8cff;--accent2:#8b5cf6;--ok:#34d399;--warn:#fbbf24;--radius:18px}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:radial-gradient(1200px 600px at 80% -10%,#2a1f5c55,transparent),radial-gradient(900px 500px at -10% 10%,#12407055,transparent),var(--bg);color:var(--text);font:16px/1.65 system-ui,-apple-system,"Segoe UI","PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;-webkit-font-smoothing:antialiased}
+a{color:#8fb4ff;text-decoration:none}a:hover{text-decoration:underline}
+img{max-width:100%;display:block}
+.wrap{max-width:1120px;margin:0 auto;padding:0 20px}
+header{position:sticky;top:0;z-index:10;backdrop-filter:saturate(1.4) blur(12px);-webkit-backdrop-filter:saturate(1.4) blur(12px);background:#0b1220cc;border-bottom:1px solid #ffffff10}
+.nav{display:flex;align-items:center;gap:16px;height:60px}
+.brand{display:flex;align-items:center;gap:10px;font-weight:700;color:var(--text);min-width:0}.brand span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.brand img{width:30px;height:30px;border-radius:8px}
+.nav nav{display:flex;gap:18px;margin-left:auto;font-size:14px}
+.nav nav a{color:var(--muted)}.nav nav a:hover{color:var(--text);text-decoration:none}
+.lang{display:flex;flex-shrink:0;white-space:nowrap;border:1px solid var(--line);border-radius:999px;overflow:hidden;font-size:13px}
+.lang button{background:none;border:0;color:var(--muted);padding:5px 11px;cursor:pointer;font:inherit}
+.lang button.on{background:var(--accent);color:#fff}
+.hero{padding-top:72px;padding-bottom:40px;display:grid;grid-template-columns:1fr 1.15fr;gap:48px;align-items:center}
+.badge{display:inline-flex;gap:8px;align-items:center;font-size:13px;color:var(--muted);border:1px solid var(--line);border-radius:999px;padding:4px 12px;background:#ffffff06}
+.badge i{width:8px;height:8px;border-radius:50%;background:var(--ok);display:inline-block}
+h1{font-size:clamp(34px,5vw,54px);line-height:1.12;margin:18px 0 16px;letter-spacing:-.02em}
+h1 .grad{background:linear-gradient(90deg,#60a5fa,#a78bfa,#f472b6);-webkit-background-clip:text;background-clip:text;color:transparent}
+.lead{font-size:18px;color:var(--muted);margin:0 0 28px;max-width:34em}
+.cta{display:flex;flex-wrap:wrap;gap:12px}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:12px 20px;border-radius:12px;font-weight:600;font-size:15px;border:1px solid var(--line);color:var(--text);background:#ffffff08;cursor:pointer}
+.btn:hover{text-decoration:none;background:#ffffff12}
+.btn.primary{background:linear-gradient(90deg,var(--accent),var(--accent2));border:0;color:#fff}
+.btn.primary:hover{filter:brightness(1.08)}
+.btn[aria-disabled=true]{opacity:.75;cursor:default}
+.btn small{font-weight:500;font-size:12px;opacity:.85;border:1px solid #ffffff40;border-radius:999px;padding:0 8px}
+.shot{border-radius:var(--radius);overflow:hidden;border:1px solid #ffffff14;box-shadow:0 30px 80px -20px #000a,0 0 0 1px #ffffff06}
+section{padding:56px 0}
+h2{font-size:clamp(26px,3.2vw,34px);margin:0 0 10px;letter-spacing:-.01em}
+.sub{color:var(--muted);margin:0 0 32px}
+.grid{display:grid;gap:16px;grid-template-columns:repeat(3,1fr)}
+.card{background:linear-gradient(180deg,#16223c,#121b30);border:1px solid var(--line);border-radius:var(--radius);padding:22px}
+.card .ic{font-size:26px;line-height:1}
+.card h3{margin:12px 0 6px;font-size:17px}
+.card p{margin:0;color:var(--muted);font-size:14.5px}
+.styles{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin:26px auto 0;max-width:620px}
+.styles figure{margin:0;text-align:center;font-size:14px;color:var(--muted)}
+.styles img{width:100%;aspect-ratio:1;border-radius:14px;border:1px solid var(--line);image-rendering:auto}
+.dl{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.dl .card h3{font-size:19px;margin-top:4px;display:flex;align-items:center;gap:10px}
+.pill{font-size:12px;font-weight:600;padding:2px 10px;border-radius:999px;background:#fbbf2422;color:var(--warn);border:1px solid #fbbf2455}
+.pill.ok{background:#34d39922;color:var(--ok);border-color:#34d39955}
+ol.steps{counter-reset:s;list-style:none;padding:0;margin:14px 0 0}
+ol.steps li{counter-increment:s;position:relative;padding:0 0 12px 38px;color:var(--muted);font-size:14.5px}
+ol.steps li::before{content:counter(s);position:absolute;left:0;top:1px;width:26px;height:26px;border-radius:50%;background:#4f8cff22;color:#8fb4ff;font-weight:700;font-size:13px;display:grid;place-items:center;border:1px solid #4f8cff55}
+ol.steps b{color:var(--text)}
+code{background:#ffffff10;border:1px solid #ffffff14;border-radius:6px;padding:1px 6px;font-size:.92em;color:#cfe0ff}
+.how{display:grid;grid-template-columns:1fr 1fr;gap:36px;align-items:center}
+.how ol.steps li{font-size:16px;padding-bottom:18px}
+details{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:4px 20px;margin-bottom:12px}
+summary{cursor:pointer;font-weight:600;padding:14px 0;list-style:none;display:flex;justify-content:space-between;gap:12px}
+summary::-webkit-details-marker{display:none}
+summary::after{content:"+";color:var(--muted);font-weight:400;font-size:20px;line-height:1}
+details[open] summary::after{content:"–"}
+details p{color:var(--muted);margin:0 0 16px}
+.gallery{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+footer{border-top:1px solid #ffffff10;padding:32px 0 48px;color:var(--muted);font-size:14px}
+footer .row{display:flex;flex-wrap:wrap;gap:10px 22px;align-items:center}
+footer .row a{color:var(--muted)}footer .row a:hover{color:var(--text)}
+footer .note{margin-top:14px;font-size:12.5px;opacity:.8}
+@media (max-width:900px){.hero{grid-template-columns:1fr;padding-top:44px;gap:32px}.grid{grid-template-columns:1fr 1fr}.dl,.how,.gallery{grid-template-columns:1fr}.nav nav{display:none}.lang{margin-left:auto}}
+@media (max-width:560px){.brand{font-size:15px}.grid{grid-template-columns:1fr}.styles{grid-template-columns:repeat(2,1fr)}.btn{width:100%;justify-content:center}section{padding:40px 0}.lead{font-size:16.5px}}
+</style>
+</head>
+<body>
+<header><div class="wrap nav">
+  <a class="brand" href="#top"><img src="assets/icon128.png" alt="" width="30" height="30"><span data-i18n="brand">粉丝拼图 · Follower Mosaic</span></a>
+  <nav>
+    <a href="#features" data-i18n="nav_features">功能</a>
+    <a href="#download" data-i18n="nav_download">下载</a>
+    <a href="#how" data-i18n="nav_how">使用方法</a>
+    <a href="#faq" data-i18n="nav_faq">常见问题</a>
+    <a href="https://github.com/hezongkun/follower-mosaic" target="_blank" rel="noopener">GitHub</a>
+  </nav>
+  <div class="lang" role="group" aria-label="Language">
+    <button type="button" data-lang="zh-CN">中文</button><button type="button" data-lang="en">EN</button>
+  </div>
+</div></header>
+
+<main id="top">
+<div class="wrap hero">
+  <div>
+    <span class="badge"><i></i><span data-i18n="badge">免费 · 开源 · Chrome 插件</span></span>
+    <h1 data-i18n-html="h1">把你的 X 粉丝头像<br><span class="grad">拼成一张图</span></h1>
+    <p class="lead" data-i18n="lead">粉丝拼图会读取你的 X 粉丝头像，把它们拼成你的名字、一颗爱心、一个星系或一面头像墙，一键下载高清 PNG，发帖感谢粉丝正合适。</p>
+    <div class="cta">
+      <a class="btn primary" href="#download" data-i18n="cta_get">免费获取</a>
+      <a class="btn" href="https://github.com/hezongkun/follower-mosaic" target="_blank" rel="noopener" data-i18n="cta_github">在 GitHub 查看</a>
+    </div>
+  </div>
+  <div class="shot"><img data-src-zh="assets/shot3-result.webp" data-src-en="assets/en/shot3-result.webp" src="assets/shot3-result.webp" width="1280" height="800" alt="Follower Mosaic sample: follower avatars forming a name" data-i18n-alt="alt_hero"></div>
+</div>
+
+<section id="features"><div class="wrap">
+  <h2 data-i18n="f_title">简单、安全、好看</h2>
+  <p class="sub" data-i18n="f_sub">不用注册，不用授权，装好就能用。</p>
+  <div class="grid">
+    <div class="card"><div class="ic">🔐</div><h3 data-i18n="f1_t">无需登录或授权</h3><p data-i18n="f1_d">不要密码、不要 OAuth、不要 API Key。直接沿用你在 x.com 上已有的登录状态，账号更安全。</p></div>
+    <div class="card"><div class="ic">💻</div><h3 data-i18n="f2_t">完全在本地运行</h3><p data-i18n="f2_d">读取、拼图、导出都在你自己的浏览器里完成，没有服务器。</p></div>
+    <div class="card"><div class="ic">🚫</div><h3 data-i18n="f3_t">不上传任何数据</h3><p data-i18n="f3_d">没有统计、广告和追踪，也不会发帖、关注或私信。所有请求都只读。</p></div>
+    <div class="card"><div class="ic">🎚️</div><h3 data-i18n="f4_t">粉丝数和速度可调</h3><p data-i18n="f4_d">最多读取 100 到 5000 位粉丝（默认 500），每页间隔 1 到 10 秒（默认 5 秒），读得越慢越稳。</p></div>
+    <div class="card"><div class="ic">✏️</div><h3 data-i18n="f5_t">自定义文字和字体</h3><p data-i18n="f5_d">默认拼你的昵称，也可以改成任何文字，支持中文和多种字体、配色。</p></div>
+    <div class="card"><div class="ic">🖼️</div><h3 data-i18n="f6_t">高清无水印</h3><p data-i18n="f6_d">最高 2400 px 的 PNG，深色渐变背景，没有水印，下载就能发。</p></div>
+  </div>
+  <div class="styles">
+    <figure><img src="assets/style-text.webp" alt="" loading="lazy" width="160" height="160"><figcaption data-i18n="s_name">名字</figcaption></figure>
+    <figure><img src="assets/style-galaxy.webp" alt="" loading="lazy" width="160" height="160"><figcaption data-i18n="s_galaxy">星系</figcaption></figure>
+    <figure><img src="assets/style-heart.webp" alt="" loading="lazy" width="160" height="160"><figcaption data-i18n="s_heart">爱心</figcaption></figure>
+    <figure><img src="assets/style-grid.webp" alt="" loading="lazy" width="160" height="160"><figcaption data-i18n="s_grid">头像墙</figcaption></figure>
+  </div>
+</div></section>
+
+<section id="download"><div class="wrap">
+  <h2 data-i18n="d_title">下载安装</h2>
+  <p class="sub" data-i18n="d_sub">支持 Chrome 和 Edge、Brave 等 Chromium 内核浏览器（电脑版）。</p>
+  <div class="dl">
+    <div class="card">
+      <h3><span data-i18n="d_store">Chrome 应用商店</span> <span class="pill" id="store-pill" data-i18n="d_soon">审核中</span></h3>
+      <p data-i18n="d_store_d">上架后点一下就能安装，以后自动更新。正在等待 Google 审核，通过后这里会换成安装按钮。</p>
+      <p style="margin-top:16px"><a class="btn primary" id="store-link" href="#download" aria-disabled="true" data-i18n="d_store_btn">即将上架</a></p>
+    </div>
+    <div class="card">
+      <h3><span data-i18n="d_zip">安装包手动安装</span> <span class="pill ok">v1.0.0</span></h3>
+      <p style="margin-bottom:14px"><a class="btn" href="downloads/follower-mosaic-1.0.0.zip" download data-i18n="d_zip_btn">下载 zip</a> &nbsp;<a href="https://github.com/hezongkun/follower-mosaic" target="_blank" rel="noopener" data-i18n="d_src">或从 GitHub 获取源码</a></p>
+      <ol class="steps">
+        <li data-i18n-html="z1">下载 zip 并<b>解压</b>到一个固定的文件夹（之后别删）。</li>
+        <li data-i18n-html="z2">在地址栏打开 <code>chrome://extensions</code>。</li>
+        <li data-i18n-html="z3">打开右上角的<b>开发者模式</b>。</li>
+        <li data-i18n-html="z4">点<b>加载已解压的扩展程序</b>，选中刚才解压出的文件夹（里面有 <code>manifest.json</code>）。</li>
+        <li data-i18n-html="z5">点浏览器右上角的拼图图标，把「粉丝拼图」<b>固定</b>到工具栏。</li>
+      </ol>
+    </div>
+  </div>
+</div></section>
+
+<section id="how"><div class="wrap how">
+  <div>
+    <h2 data-i18n="h_title">怎么用</h2>
+    <p class="sub" data-i18n="h_sub">五步搞定，不需要任何电脑基础。</p>
+    <ol class="steps">
+      <li data-i18n-html="h1s">在 Chrome 里打开 <b>x.com</b> 并登录你的账号。</li>
+      <li data-i18n-html="h2s">点工具栏上的<b>粉丝拼图</b>图标，页面上会弹出面板。</li>
+      <li data-i18n-html="h3s"><b>选一个样式</b>：名字、星系、爱心或头像墙。想拼别的文字、换字体也在这里改。</li>
+      <li data-i18n-html="h4s"><b>等它读完</b>。面板会显示进度，粉丝多就多等一会儿，期间别关掉面板。</li>
+      <li data-i18n-html="h5s">点<b>下载图片</b>，得到一张高清 PNG。</li>
+    </ol>
+  </div>
+  <div class="shot"><img data-src-zh="assets/shot1-popup.webp" data-src-en="assets/en/shot1-popup.webp" src="assets/shot1-popup.webp" width="1280" height="800" alt="" loading="lazy"></div>
+</div></section>
+
+<section><div class="wrap gallery">
+  <div class="shot"><img data-src-zh="assets/shot4-styles.webp" data-src-en="assets/en/shot4-styles.webp" src="assets/shot4-styles.webp" width="1280" height="800" alt="" loading="lazy"></div>
+  <div class="shot"><img data-src-zh="assets/shot2-progress.webp" data-src-en="assets/en/shot2-progress.webp" src="assets/shot2-progress.webp" width="1280" height="800" alt="" loading="lazy"></div>
+</div></section>
+
+<section id="faq"><div class="wrap" style="max-width:820px">
+  <h2 data-i18n="q_title">常见问题</h2>
+  <p class="sub"></p>
+  <details open><summary data-i18n="q1">安全吗？会不会封号？</summary><p data-i18n="a1">插件不要密码、不要授权，也不会替你发帖、关注、点赞或私信，只做和你自己翻粉丝列表一样的只读操作，而且默认每 5 秒才读一页，频率很低。数据不离开你的浏览器，代码完全开源，可以在 GitHub 上查看。</p></details>
+  <details><summary data-i18n="q2">为什么一开始很慢，一直停在 0%？</summary><p data-i18n="a2">插件会先打开你的粉丝页，等 X 自己发出第一次粉丝列表请求，再接着往下读，所以第一页通常要多等几秒到十几秒，这是正常的。之后每页按你设置的间隔读取，大约 20 位一页。</p></details>
+  <details><summary data-i18n="q3">关掉面板还会继续读取吗？</summary><p data-i18n="a3">不会。关掉面板（或关闭、刷新这个 x.com 标签页）就会停止读取，已读到的数据也会丢弃，下次需要重新开始。读取时请保持面板打开。</p></details>
+  <details><summary data-i18n="q4">为什么读到的人数比粉丝数少？</summary><p data-i18n="a4">X 显示的粉丝数里包含已封禁、受保护或已停用的账号，这些不会出现在列表里，所以读完时人数可能比显示的少一些。</p></details>
+  <details><summary data-i18n="q5">能看别人的粉丝吗？</summary><p data-i18n="a5">插件读取的是你在 x.com 上能看到的公开粉丝列表，主要用于给自己的账号做感谢图。请尊重他人隐私，合理使用。</p></details>
+</div></section>
+</main>
+
+<footer><div class="wrap">
+  <div class="row">
+    <span data-i18n="brand">粉丝拼图 · Follower Mosaic</span>
+    <a href="https://github.com/hezongkun/follower-mosaic" target="_blank" rel="noopener">GitHub</a>
+    <a href="privacy.html" data-i18n="privacy">隐私政策</a>
+    <a href="https://github.com/hezongkun/follower-mosaic/issues" target="_blank" rel="noopener" data-i18n="feedback">问题反馈</a>
+    <span><span data-i18n="author">作者</span> <a href="https://x.com/Kuno_he" target="_blank" rel="noopener">@Kuno_he</a></span>
+  </div>
+  <div class="note" data-i18n="disclaimer">MIT 开源。本插件与 X Corp. 无关联，“X”仅用于说明适用的网站。</div>
+</div></footer>
+
+<script>
+/* ==== Chrome Web Store link ==========================================
+ * When the store listing is approved, paste its URL here, e.g.
+ * 'https://chromewebstore.google.com/detail/follower-mosaic/<id>'.
+ * Leave empty to show the "coming soon / 审核中" state.
+ * ===================================================================== */
+const CHROME_STORE_URL = '';
+
+const I18N = {
+  'zh-CN': {
+    title:'粉丝拼图 Follower Mosaic · 把 X 粉丝头像拼成一张图',
+    brand:'粉丝拼图 · Follower Mosaic', nav_features:'功能', nav_download:'下载', nav_how:'使用方法', nav_faq:'常见问题',
+    badge:'免费 · 开源 · Chrome 插件',
+    h1:'把你的 X 粉丝头像<br><span class="grad">拼成一张图</span>',
+    lead:'粉丝拼图会读取你的 X 粉丝头像，把它们拼成你的名字、一颗爱心、一个星系或一面头像墙，一键下载高清 PNG，发帖感谢粉丝正合适。',
+    cta_get:'免费获取', cta_github:'在 GitHub 查看', alt_hero:'示例：粉丝头像拼成的文字',
+    f_title:'简单、安全、好看', f_sub:'不用注册，不用授权，装好就能用。',
+    f1_t:'无需登录或授权', f1_d:'不要密码、不要 OAuth、不要 API Key。直接沿用你在 x.com 上已有的登录状态，账号更安全。',
+    f2_t:'完全在本地运行', f2_d:'读取、拼图、导出都在你自己的浏览器里完成，没有服务器。',
+    f3_t:'不上传任何数据', f3_d:'没有统计、广告和追踪，也不会发帖、关注或私信。所有请求都只读。',
+    f4_t:'粉丝数和速度可调', f4_d:'最多读取 100 到 5000 位粉丝（默认 500），每页间隔 1 到 10 秒（默认 5 秒），读得越慢越稳。',
+    f5_t:'自定义文字和字体', f5_d:'默认拼你的昵称，也可以改成任何文字，支持中文和多种字体、配色。',
+    f6_t:'高清无水印', f6_d:'最高 2400 px 的 PNG，深色渐变背景，没有水印，下载就能发。',
+    s_name:'名字', s_galaxy:'星系', s_heart:'爱心', s_grid:'头像墙',
+    d_title:'下载安装', d_sub:'支持 Chrome 和 Edge、Brave 等 Chromium 内核浏览器（电脑版）。',
+    d_store:'Chrome 应用商店', d_soon:'审核中', d_live:'已上架',
+    d_store_d:'上架后点一下就能安装，以后自动更新。正在等待 Google 审核，通过后这里会换成安装按钮。',
+    d_store_d_live:'点一下就能安装，以后自动更新，推荐大多数人用这个方式。',
+    d_store_btn:'即将上架', d_store_btn_live:'添加到 Chrome',
+    d_zip:'安装包手动安装', d_zip_btn:'下载 zip', d_src:'或从 GitHub 获取源码',
+    z1:'下载 zip 并<b>解压</b>到一个固定的文件夹（之后别删）。',
+    z2:'在地址栏打开 <code>chrome://extensions</code>。',
+    z3:'打开右上角的<b>开发者模式</b>。',
+    z4:'点<b>加载已解压的扩展程序</b>，选中刚才解压出的文件夹（里面有 <code>manifest.json</code>）。',
+    z5:'点浏览器右上角的拼图图标，把「粉丝拼图」<b>固定</b>到工具栏。',
+    h_title:'怎么用', h_sub:'五步搞定，不需要任何电脑基础。',
+    h1s:'在 Chrome 里打开 <b>x.com</b> 并登录你的账号。',
+    h2s:'点工具栏上的<b>粉丝拼图</b>图标，页面上会弹出面板。',
+    h3s:'<b>选一个样式</b>：名字、星系、爱心或头像墙。想拼别的文字、换字体也在这里改。',
+    h4s:'<b>等它读完</b>。面板会显示进度，粉丝多就多等一会儿，期间别关掉面板。',
+    h5s:'点<b>下载图片</b>，得到一张高清 PNG。',
+    q_title:'常见问题',
+    q1:'安全吗？会不会封号？', a1:'插件不要密码、不要授权，也不会替你发帖、关注、点赞或私信，只做和你自己翻粉丝列表一样的只读操作，而且默认每 5 秒才读一页，频率很低。数据不离开你的浏览器，代码完全开源，可以在 GitHub 上查看。',
+    q2:'为什么一开始很慢，一直停在 0%？', a2:'插件会先打开你的粉丝页，等 X 自己发出第一次粉丝列表请求，再接着往下读，所以第一页通常要多等几秒到十几秒，这是正常的。之后每页按你设置的间隔读取，大约 20 位一页。',
+    q3:'关掉面板还会继续读取吗？', a3:'不会。关掉面板（或关闭、刷新这个 x.com 标签页）就会停止读取，已读到的数据也会丢弃，下次需要重新开始。读取时请保持面板打开。',
+    q4:'为什么读到的人数比粉丝数少？', a4:'X 显示的粉丝数里包含已封禁、受保护或已停用的账号，这些不会出现在列表里，所以读完时人数可能比显示的少一些。',
+    q5:'能看别人的粉丝吗？', a5:'插件读取的是你在 x.com 上能看到的公开粉丝列表，主要用于给自己的账号做感谢图。请尊重他人隐私，合理使用。',
+    privacy:'隐私政策', feedback:'问题反馈', author:'作者',
+    disclaimer:'MIT 开源。本插件与 X Corp. 无关联，“X”仅用于说明适用的网站。'
+  },
+  en: {
+    title:'Follower Mosaic · Turn your X followers into one image',
+    brand:'Follower Mosaic · 粉丝拼图', nav_features:'Features', nav_download:'Download', nav_how:'How to use', nav_faq:'FAQ',
+    badge:'Free · Open source · Chrome extension',
+    h1:'Turn your X followers\' avatars<br><span class="grad">into one image</span>',
+    lead:'Follower Mosaic collects your X followers\' profile pictures and arranges them into your name, a heart, a galaxy or an avatar wall. Download a sharp PNG in one click, perfect for a thank-you post.',
+    cta_get:'Get it free', cta_github:'View on GitHub', alt_hero:'Sample: follower avatars forming text',
+    f_title:'Simple, safe and good-looking', f_sub:'No sign-up and no authorization. Install it and go.',
+    f1_t:'No login or authorization', f1_d:'No password, no OAuth, no API key. It simply uses the x.com session you already have, so your account stays safe.',
+    f2_t:'Runs locally', f2_d:'Fetching, drawing and exporting all happen in your own browser. There is no server.',
+    f3_t:'Nothing is uploaded', f3_d:'No analytics, ads or tracking. It never posts, follows or messages. Every request is read-only.',
+    f4_t:'Adjustable cap and speed', f4_d:'Read 100 to 5,000 followers (default 500), with a 1 to 10 second delay per page (default 5 s). Slower is gentler.',
+    f5_t:'Custom text and fonts', f5_d:'Spells your display name by default, or any text you like, including Chinese, with several fonts and color themes.',
+    f6_t:'HD, no watermark', f6_d:'PNG up to 2400 px on a dark gradient background, with no watermark. Ready to post.',
+    s_name:'Name', s_galaxy:'Galaxy', s_heart:'Heart', s_grid:'Avatar wall',
+    d_title:'Download', d_sub:'Works in desktop Chrome and other Chromium browsers such as Edge and Brave.',
+    d_store:'Chrome Web Store', d_soon:'Coming soon', d_live:'Available',
+    d_store_d:'One-click install with automatic updates. The listing is in Google\'s review now; this button will switch to "Add to Chrome" once it\'s approved.',
+    d_store_d_live:'One-click install with automatic updates. Recommended for most people.',
+    d_store_btn:'Coming soon', d_store_btn_live:'Add to Chrome',
+    d_zip:'Install from zip', d_zip_btn:'Download zip', d_src:'or get the source on GitHub',
+    z1:'Download the zip and <b>unzip</b> it into a folder you\'ll keep.',
+    z2:'Open <code>chrome://extensions</code> in the address bar.',
+    z3:'Turn on <b>Developer mode</b> (top right).',
+    z4:'Click <b>Load unpacked</b> and select the unzipped folder (the one containing <code>manifest.json</code>).',
+    z5:'Click the puzzle icon in the toolbar and <b>pin</b> Follower Mosaic.',
+    h_title:'How to use', h_sub:'Five steps. No technical skills needed.',
+    h1s:'Open <b>x.com</b> in Chrome and log in.',
+    h2s:'Click the <b>Follower Mosaic</b> icon in the toolbar. A panel opens on the page.',
+    h3s:'<b>Pick a style</b>: Name, Galaxy, Heart or Avatar wall. Change the text or font here too.',
+    h4s:'<b>Wait</b> while it reads your followers. The panel shows progress; keep it open.',
+    h5s:'Click <b>Download</b> to save a high-resolution PNG.',
+    q_title:'FAQ',
+    q1:'Is it safe? Could my account get banned?', a1:'It never asks for your password or any authorization, and it never posts, follows, likes or messages. It only does the same read-only browsing you would do yourself, one page every 5 seconds by default. Your data never leaves your browser, and the code is open source on GitHub.',
+    q2:'Why is it slow at first and stuck at 0%?', a2:'It first opens your followers page and waits for X to make its own first follower-list request, then continues from there, so the first page can take several seconds or more. That\'s normal. After that it reads about 20 followers per page at the delay you chose.',
+    q3:'Does it keep fetching if I close the panel?', a3:'No. Closing the panel (or closing or reloading that x.com tab) stops fetching and discards what was read, so you\'d start over next time. Keep the panel open while it works.',
+    q4:'Why are fewer followers read than my follower count?', a4:'X\'s follower count includes suspended, protected or deactivated accounts that don\'t appear in the list, so the final number can be a little lower.',
+    q5:'Can I use it on other accounts?', a5:'It reads the public follower list you can see on x.com and is meant for making a thank-you image for your own account. Please respect other people\'s privacy.',
+    privacy:'Privacy policy', feedback:'Feedback', author:'Author',
+    disclaimer:'MIT licensed. Not affiliated with or endorsed by X Corp.; "X" is used only to describe the website it works with.'
+  }
+};
+
+function pickLang(){
+  const q = new URLSearchParams(location.search).get('lang');
+  if (q) return /^zh/i.test(q) ? 'zh-CN' : 'en';
+  try { const s = localStorage.getItem('fm_lang'); if (s && I18N[s]) return s; } catch(e){}
+  const langs = navigator.languages && navigator.languages.length ? navigator.languages : [navigator.language || 'en'];
+  return /^zh/i.test(langs[0] || '') ? 'zh-CN' : 'en';
+}
+function applyLang(lang){
+  const t = I18N[lang], live = !!CHROME_STORE_URL;
+  document.documentElement.lang = lang;
+  document.title = t.title;
+  document.querySelectorAll('[data-i18n]').forEach(el => { const k = el.dataset.i18n; if (t[k] != null) el.textContent = t[k]; });
+  document.querySelectorAll('[data-i18n-html]').forEach(el => { const k = el.dataset.i18nHtml; if (t[k] != null) el.innerHTML = t[k]; });
+  document.querySelectorAll('[data-i18n-alt]').forEach(el => { const k = el.dataset.i18nAlt; if (t[k] != null) el.alt = t[k]; });
+  document.querySelectorAll('img[data-src-zh]').forEach(el => { el.src = lang === 'zh-CN' ? el.dataset.srcZh : el.dataset.srcEn; });
+  document.querySelectorAll('.lang button').forEach(b => b.classList.toggle('on', b.dataset.lang === lang));
+  const link = document.getElementById('store-link'), pill = document.getElementById('store-pill');
+  const desc = link.closest('.card').querySelector('p');
+  if (live) {
+    link.href = CHROME_STORE_URL; link.target = '_blank'; link.rel = 'noopener'; link.removeAttribute('aria-disabled');
+    link.textContent = t.d_store_btn_live; pill.textContent = t.d_live; pill.classList.add('ok'); desc.textContent = t.d_store_d_live;
+    document.querySelector('.cta .btn.primary').href = CHROME_STORE_URL;
+  } else {
+    link.textContent = t.d_store_btn; pill.textContent = t.d_soon; desc.textContent = t.d_store_d;
+  }
+}
+document.querySelectorAll('.lang button').forEach(b => b.addEventListener('click', () => {
+  try { localStorage.setItem('fm_lang', b.dataset.lang); } catch(e){}
+  applyLang(b.dataset.lang);
+}));
+document.getElementById('store-link').addEventListener('click', e => { if (!CHROME_STORE_URL) e.preventDefault(); });
+applyLang(pickLang());
+</script>
+</body>
+</html>
