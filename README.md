@@ -2,6 +2,11 @@
 
 **English** · [简体中文](README.zh-CN.md)
 
+[![Available in the Chrome Web Store](https://img.shields.io/badge/Chrome%20Web%20Store-Add%20to%20Chrome-4285F4?logo=googlechrome&logoColor=white&style=for-the-badge)](https://chromewebstore.google.com/detail/lnjiabjdmdklglgijbhmommbhdkaanga?hl=en)
+[![Website](https://img.shields.io/badge/Website-x.sdkmini.com-8b5cf6?style=for-the-badge)](https://x.sdkmini.com)
+
+**[➜ Install from the Chrome Web Store](https://chromewebstore.google.com/detail/lnjiabjdmdklglgijbhmommbhdkaanga?hl=en)** · Official site: **https://x.sdkmini.com**
+
 Turn your X (Twitter) followers' avatars into one beautiful image: your name spelled in avatars, the X logo, a heart, or a clean grid wall. Free, open source, read-only, and everything runs in your own browser.
 
 | Name | X logo | Heart | Grid |
@@ -14,11 +19,13 @@ Made by **[@Kuno_he](https://x.com/Kuno_he)** · MIT License · Not affiliated w
 
 ## Install
 
-- **Chrome Web Store**: *coming soon* — `https://chromewebstore.google.com/detail/<id>` (placeholder)
-- **Load unpacked** (now):
-  1. Download `follower-mosaic-extension.zip` from [Releases](https://github.com/hezongkun/follower-mosaic/releases) (or build it, see below) and unzip it.
-  2. Open `chrome://extensions`, turn on **Developer mode** (top right).
-  3. Click **Load unpacked** and choose the unzipped folder.
+1. **Chrome Web Store (recommended)**: [Add to Chrome](https://chromewebstore.google.com/detail/lnjiabjdmdklglgijbhmommbhdkaanga?hl=en). One click, automatic updates. Works in Chrome, Edge, Brave and other desktop Chromium browsers.
+2. **Install manually (alternative)**, if you can't reach the store:
+   1. Download `follower-mosaic-1.0.0.zip` from [x.sdkmini.com](https://x.sdkmini.com/#manual) (or build it, see below) and unzip it.
+   2. Open `chrome://extensions`, turn on **Developer mode** (top right).
+   3. Click **Load unpacked** and choose the unzipped folder.
+
+<sub>The store version is 1.0.0 (styles: Name, Galaxy, Heart, Avatar wall). The `main` branch may contain newer, unreleased changes.</sub>
 
 ## Usage
 

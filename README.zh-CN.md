@@ -2,6 +2,11 @@
 
 [English](README.md) · **简体中文**
 
+[![在 Chrome 应用商店安装](https://img.shields.io/badge/Chrome%20%E5%BA%94%E7%94%A8%E5%95%86%E5%BA%97-%E6%B7%BB%E5%8A%A0%E5%88%B0%20Chrome-4285F4?logo=googlechrome&logoColor=white&style=for-the-badge)](https://chromewebstore.google.com/detail/lnjiabjdmdklglgijbhmommbhdkaanga?hl=zh-CN)
+[![官网](https://img.shields.io/badge/%E5%AE%98%E7%BD%91-x.sdkmini.com-8b5cf6?style=for-the-badge)](https://x.sdkmini.com)
+
+**[➜ 从 Chrome 应用商店安装](https://chromewebstore.google.com/detail/lnjiabjdmdklglgijbhmommbhdkaanga?hl=zh-CN)** · 官网：**https://x.sdkmini.com**
+
 把你的 X（Twitter）粉丝头像拼成一张好看的图：用头像拼出你的昵称、X 标志、爱心，或者整齐的头像墙。免费开源，只读取，全部在你自己的浏览器里完成。
 
 | 昵称 | X 标志 | 爱心 | 头像墙 |
@@ -14,11 +19,13 @@
 
 ## 安装
 
-- **Chrome 应用商店**：*即将上架*，链接 `https://chromewebstore.google.com/detail/<id>`（占位）
-- **手动安装（现在就能用）**：
-  1. 从 [Releases](https://github.com/hezongkun/follower-mosaic/releases) 下载 `follower-mosaic-extension.zip`（或按下方命令自己构建），然后解压。
-  2. Chrome 地址栏打开 `chrome://extensions`，打开右上角的「开发者模式」。
-  3. 点「加载已解压的扩展程序」，选择解压出来的文件夹。
+1. **Chrome 应用商店（推荐）**：[添加到 Chrome](https://chromewebstore.google.com/detail/lnjiabjdmdklglgijbhmommbhdkaanga?hl=zh-CN)。点一下就装好，以后自动更新。Chrome、Edge、Brave 等电脑版 Chromium 内核浏览器都能用。
+2. **手动安装（备用）**，打不开应用商店时使用：
+   1. 从 [x.sdkmini.com](https://x.sdkmini.com/#manual) 下载 `follower-mosaic-1.0.0.zip`（或按下方命令自己构建），然后解压。
+   2. Chrome 地址栏打开 `chrome://extensions`，打开右上角的「开发者模式」。
+   3. 点「加载已解压的扩展程序」，选择解压出来的文件夹。
+
+<sub>商店里是 1.0.0 版（样式：名字、星系、爱心、头像墙）；`main` 分支可能包含尚未发布的新改动。</sub>
 
 ## 使用
 
